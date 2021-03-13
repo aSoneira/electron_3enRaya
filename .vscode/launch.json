@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type" : "node",
+            "name": "depurajs",
+			"request": "launch",
+			"cwd": "",
+			"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+			"windows": {
+			"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+			},
+            "program": "${workspaceRoot}/compilados/principal.js",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": [ "${workspaceFolder}/compilados/*.js" ],
+			"protocol": "inspector"
+        }
+    ]
+}
