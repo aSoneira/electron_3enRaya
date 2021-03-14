@@ -11,23 +11,42 @@ var o_parrafo1 = document.getElementById('idParrafo1');
 var o_tablero = document.getElementById('idTablero');
 var boton_exportaArchivo = document.getElementById('idBotonExportarArchivo');
 var boton_importaBD = document.getElementById('idBotonImportarBD');
+var boton_exportaBD = document.getElementById('idBotonExportarBD');
+var boton_importaArchivo = document.getElementById('idBotonImportarArchivo');
 electron_1.ipcRenderer.on('actualizaPanelMensajes', function (evento1, mensaje) {
     o_parrafo1.innerHTML = mensaje;
 });
 electron_1.ipcRenderer.on('marcaColorCasillaJugador', function (evento2, objetoCoordenada, jugador) {
     var coordenadas = new Coordenadas_1.Coordenadas(objetoCoordenada); //objetoCoordenada['i_x'], objetoCoordenada['i_y']
     var casilla = document.getElementById('idCasilla_' + coordenadas.getI_x() + '_' + coordenadas.getI_y());
-    if (jugador == 1) {
-        casilla.style.backgroundColor = 'green';
+    var micolor = 'lightgray'; //caso 0
+    switch (jugador) {
+        case 1:
+            micolor = 'green';
+            break;
+        case 2:
+            micolor = 'red';
+            break;
+        default:
     }
-    else {
-        casilla.style.backgroundColor = 'red';
-    }
+    casilla.style.backgroundColor = micolor;
 });
 function clicExportarAarchivo() {
     electron_1.ipcRenderer.send('eventoExportarAarchivo');
 }
+function clicImportarBD() {
+    electron_1.ipcRenderer.send('eventoImportarBD');
+}
+function clicExportarBD() {
+    electron_1.ipcRenderer.send('eventoExportarAbd');
+}
+function clicImportarAarchivo() {
+    electron_1.ipcRenderer.send('eventoImportarArchivo');
+}
 boton_exportaArchivo.addEventListener('click', clicExportarAarchivo);
+boton_importaBD.addEventListener('click', clicImportarBD);
+boton_exportaBD.addEventListener('click', clicExportarBD);
+boton_importaArchivo.addEventListener('click', clicImportarAarchivo);
 //La misma función de abajo, pero en TypeScript
 function funcionClicCasilla(oc) {
     electron_1.ipcRenderer.send('seleccionCasilla', oc);

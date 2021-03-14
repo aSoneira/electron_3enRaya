@@ -40,27 +40,35 @@ exports.guardarEnArchivo = exports.leerArchivo = void 0;
 var sistemaArchivos = require("fs");
 var electron_1 = require("electron");
 function leerArchivo() {
-    var s_error1;
-    return new Promise(function (resolver, rechazar) {
-        //'openDirectory', 'multiSelections'
-        electron_1.dialog.showOpenDialog({ properties: ['openFile'] }, function (ls_rutasArchivos) {
-            //rutasArchivos es la lista de archivos seleccionados
-            if (ls_rutasArchivos === undefined) {
-                s_error1 = 'No ha seleccionado ninguno archivo';
-                console.log(s_error1);
-                rechazar(s_error1);
-            }
-            else {
-                var s_rutaArchivo = ls_rutasArchivos[0]; //solo coge el primer archivo seleccionado
-                console.log(s_rutaArchivo);
-                try {
-                    var s_crudo = sistemaArchivos.readFileSync(s_rutaArchivo); //el string de datos en crudo
-                    resolver(s_crudo);
-                }
-                catch (s_error1) {
-                    rechazar(s_error1);
-                }
-            }
+    return __awaiter(this, void 0, void 0, function () {
+        var s_error1;
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolver, rechazar) {
+                    //'openDirectory', 'multiSelections'
+                    electron_1.dialog.showOpenDialog({ properties: ['openFile'] })
+                        .then(function (o_respuesta) {
+                        var ls_rutasArchivos = o_respuesta['filePaths'];
+                        //rutasArchivos es la lista de archivos seleccionados
+                        if (ls_rutasArchivos === undefined) {
+                            s_error1 = 'No ha seleccionado ninguno archivo';
+                            console.log(s_error1);
+                            rechazar(s_error1);
+                        }
+                        else {
+                            var s_rutaArchivo = ls_rutasArchivos[0]; //solo coge el primer archivo seleccionado
+                            console.log(s_rutaArchivo);
+                            try {
+                                var s_crudo = sistemaArchivos.readFileSync(s_rutaArchivo); //el string de datos en crudo
+                                resolver(s_crudo);
+                            }
+                            catch (s_error1) {
+                                rechazar(s_error1);
+                            }
+                        }
+                    }).catch(function (error1) {
+                        rechazar(error1);
+                    });
+                })];
         });
     });
 }
@@ -70,42 +78,41 @@ function guardarEnArchivo(s_crudo) {
         var s_error1;
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolver, rechazar) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            //'openDirectory', 'multiSelections'
-                            electron_1.dialog.showOpenDialog({ properties: ['openFile'] }, function (ls_rutasArchivos) {
-                                return __awaiter(this, void 0, void 0, function () {
-                                    var s_rutaArchivo, s_error1_1;
-                                    return __generator(this, function (_a) {
-                                        switch (_a.label) {
-                                            case 0:
-                                                if (!(ls_rutasArchivos === undefined)) return [3 /*break*/, 1];
-                                                s_error1 = 'No ha seleccionado ninguno archivo';
-                                                console.log(s_error1);
-                                                rechazar(s_error1);
-                                                return [3 /*break*/, 5];
-                                            case 1:
-                                                s_rutaArchivo = ls_rutasArchivos[0];
-                                                console.log(s_rutaArchivo);
-                                                _a.label = 2;
-                                            case 2:
-                                                _a.trys.push([2, 4, , 5]);
-                                                return [4 /*yield*/, f_aEscribeArchivoAsync(s_crudo, s_rutaArchivo)];
-                                            case 3:
-                                                _a.sent();
-                                                resolver(s_crudo);
-                                                return [3 /*break*/, 5];
-                                            case 4:
-                                                s_error1_1 = _a.sent();
-                                                rechazar(s_error1_1);
-                                                return [3 /*break*/, 5];
-                                            case 5: return [2 /*return*/];
-                                        }
-                                    });
-                                });
+                    //'openDirectory', 'multiSelections'
+                    electron_1.dialog.showOpenDialog({ properties: ['openFile'] })
+                        .then(function (o_respuesta) {
+                        return __awaiter(this, void 0, void 0, function () {
+                            var ls_rutasArchivos, s_rutaArchivo, s_error1_1;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        ls_rutasArchivos = o_respuesta['filePaths'];
+                                        if (!(ls_rutasArchivos === undefined)) return [3 /*break*/, 1];
+                                        s_error1 = 'No ha seleccionado ninguno archivo';
+                                        console.log(s_error1);
+                                        rechazar(s_error1);
+                                        return [3 /*break*/, 5];
+                                    case 1:
+                                        s_rutaArchivo = ls_rutasArchivos[0];
+                                        console.log(s_rutaArchivo);
+                                        _a.label = 2;
+                                    case 2:
+                                        _a.trys.push([2, 4, , 5]);
+                                        return [4 /*yield*/, f_aEscribeArchivoAsync(s_crudo, s_rutaArchivo)];
+                                    case 3:
+                                        _a.sent();
+                                        resolver(s_crudo);
+                                        return [3 /*break*/, 5];
+                                    case 4:
+                                        s_error1_1 = _a.sent();
+                                        rechazar(s_error1_1);
+                                        return [3 /*break*/, 5];
+                                    case 5: return [2 /*return*/];
+                                }
                             });
-                            return [2 /*return*/];
                         });
+                    }).catch(function (error1) {
+                        rechazar(error1);
                     });
                 })];
         });

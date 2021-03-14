@@ -1,6 +1,8 @@
 import {ipcMain, app, BrowserWindow } from 'electron';
 import * as ruta from 'path';
-import { guardarEnArchivo } from './archivos';
+import { guardarEnArchivo, leerArchivo } from './archivos';
+import { dameUnaPartidaGuardadaBD, guardaPartidaEnBD } from './basedatos';
+import { ALTO, ANCHO } from './constantes';
 import { Coordenadas } from './Coordenadas';
 import { TresEnRaya } from './TresEnRaya';
 
@@ -35,11 +37,67 @@ application.on('activate', function ():void {
   if (paginaPrincipal1 === null) createWindow();
 });
 
+function actualizarVistaAlCargarPartida(evento:Electron.IpcMainEvent){
+	let lli_tablero : number[][] = tresEnRaya.getLli_tablero();
+	let i : number = 0;
+	while(i<ALTO){
+		let j : number = 0;
+		while(j<ANCHO){
+			let i_jug : number = lli_tablero[i][j];
+			let co : Object = {i_x:i,i_y:j};
+			evento.sender.send('marcaColorCasillaJugador',co,i_jug);
+			j++;
+		}
+		i++;
+	}
+}
+
 ipcMain.on('eventoExportarAarchivo',function(evento3enRaya:Electron.IpcMainEvent){
 	let s_estadoTablero : string = tresEnRaya.darTableroEnFormatoStringJSON();
 	guardarEnArchivo(s_estadoTablero)
 	.then(()=>{
 		evento3enRaya.sender.send('actualizaPanelMensajes','se guardó con exito');
+	})
+	.catch(()=>{
+		evento3enRaya.sender.send('actualizaPanelMensajes','error al guardar');
+	});	
+});
+
+ipcMain.on('eventoImportarBD',function(evento3enRaya:Electron.IpcMainEvent){
+	dameUnaPartidaGuardadaBD()
+	.then((filas)=>{
+		if(filas!=null && filas.length>0){
+			let s_estadoTablero : string = filas[0]['estado_tablero'];
+			tresEnRaya.cargarTableroDesdeStringJSON(s_estadoTablero);
+			evento3enRaya.sender.send('actualizaPanelMensajes','se cargo con exito');
+			actualizarVistaAlCargarPartida(evento3enRaya);
+		}		
+		else{
+			evento3enRaya.sender.send('actualizaPanelMensajes','no hay partidas guardadas en BD');
+		}
+	})
+	.catch(()=>{
+		evento3enRaya.sender.send('actualizaPanelMensajes','error al guardar');
+	});	
+});
+
+ipcMain.on('eventoExportarAbd',function(evento3enRaya:Electron.IpcMainEvent){
+	let s_estadoTablero : string = tresEnRaya.darTableroEnFormatoStringJSON();
+	guardaPartidaEnBD(s_estadoTablero)
+	.then(()=>{
+		evento3enRaya.sender.send('actualizaPanelMensajes','se guardó con exito');
+	})
+	.catch(()=>{
+		evento3enRaya.sender.send('actualizaPanelMensajes','error al guardar');
+	});	
+});
+
+ipcMain.on('eventoImportarArchivo',function(evento3enRaya:Electron.IpcMainEvent){
+	leerArchivo()
+	.then((s_estadoTablero:string)=>{
+		tresEnRaya.cargarTableroDesdeStringJSON(s_estadoTablero);
+		evento3enRaya.sender.send('actualizaPanelMensajes','se cargo con exito');
+		actualizarVistaAlCargarPartida(evento3enRaya);
 	})
 	.catch(()=>{
 		evento3enRaya.sender.send('actualizaPanelMensajes','error al guardar');

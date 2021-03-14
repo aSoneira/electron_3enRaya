@@ -10,28 +10,47 @@ let o_parrafo1 : HTMLElement = document.getElementById('idParrafo1');
 let o_tablero: HTMLElement = document.getElementById('idTablero');
 let boton_exportaArchivo: HTMLElement = document.getElementById('idBotonExportarArchivo');
 let boton_importaBD: HTMLElement = document.getElementById('idBotonImportarBD');
+let boton_exportaBD: HTMLElement = document.getElementById('idBotonExportarBD');
+let boton_importaArchivo: HTMLElement = document.getElementById('idBotonImportarArchivo');
 
 ipcRenderer.on('actualizaPanelMensajes', function (evento1:Electron.Event, mensaje:string):void { 
     o_parrafo1.innerHTML=mensaje;
 });
 
-ipcRenderer.on('marcaColorCasillaJugador', function(evento2:Electron.Event, objetoCoordenada:Object, jugador:number):void{
-    
+ipcRenderer.on('marcaColorCasillaJugador', function(evento2:Electron.Event, objetoCoordenada:Object, jugador:number):void{    
     let coordenadas : Coordenadas = new Coordenadas(objetoCoordenada);//objetoCoordenada['i_x'], objetoCoordenada['i_y']
     let casilla:HTMLElement = document.getElementById('idCasilla_'+coordenadas.getI_x()+'_'+coordenadas.getI_y());
-    
-    if(jugador==1){
-        casilla.style.backgroundColor='green';
-    }else{
-        casilla.style.backgroundColor='red';
+    let micolor : string = 'lightgray';//caso 0
+    switch(jugador){
+        case 1:
+            micolor='green';
+            break;
+        case 2:
+            micolor='red';
+            break;
+        default:
     }
-    
+    casilla.style.backgroundColor=micolor;    
 });
+
 function clicExportarAarchivo(){
     ipcRenderer.send('eventoExportarAarchivo');
 }
+function clicImportarBD(){
+    ipcRenderer.send('eventoImportarBD');
+}
+
+function clicExportarBD(){
+    ipcRenderer.send('eventoExportarAbd');
+}
+function clicImportarAarchivo(){
+    ipcRenderer.send('eventoImportarArchivo');
+}
 
 boton_exportaArchivo.addEventListener('click',clicExportarAarchivo);
+boton_importaBD.addEventListener('click',clicImportarBD);
+boton_exportaBD.addEventListener('click',clicExportarBD);
+boton_importaArchivo.addEventListener('click',clicImportarAarchivo);
 
 //La misma función de abajo, pero en TypeScript
 

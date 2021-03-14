@@ -1,11 +1,13 @@
 import * as sistemaArchivos from 'fs';
 import { dialog } from 'electron';
 
-export function leerArchivo():Promise<string>{
+export async function leerArchivo():Promise<string>{
 	let s_error1:string;
 	return new Promise(function(resolver:Function, rechazar:Function){
 		//'openDirectory', 'multiSelections'
-		dialog.showOpenDialog({ properties: ['openFile'] },(ls_rutasArchivos:string[]) => {
+		dialog.showOpenDialog({ properties: ['openFile'] })
+		.then((o_respuesta:any) => {
+			let ls_rutasArchivos : string[] = o_respuesta['filePaths'];
 			//rutasArchivos es la lista de archivos seleccionados
 			if(ls_rutasArchivos === undefined){
 				s_error1='No ha seleccionado ninguno archivo';
@@ -22,15 +24,20 @@ export function leerArchivo():Promise<string>{
 					rechazar(s_error1);
 				}								
 			}
+		}
+		).catch((error1:Error)=>{
+			rechazar(error1);
 		});
 	});	
 }
 
 export async function guardarEnArchivo(s_crudo:string):Promise<string>{
 	let s_error1:string;
-	return new Promise(async function(resolver:Function, rechazar:Function){
+	return new Promise(function(resolver:Function, rechazar:Function){
 		//'openDirectory', 'multiSelections'
-		dialog.showOpenDialog({ properties: ['openFile'] },async function(ls_rutasArchivos:string[]) {
+		dialog.showOpenDialog({ properties: ['openFile'] })
+		.then(async function (o_respuesta:any) {
+			let ls_rutasArchivos : string[] = o_respuesta['filePaths'];
 			//rutasArchivos es la lista de archivos seleccionados
 			if(ls_rutasArchivos === undefined){
 				s_error1='No ha seleccionado ninguno archivo';
@@ -47,7 +54,10 @@ export async function guardarEnArchivo(s_crudo:string):Promise<string>{
 					rechazar(s_error1);
 				}								
 			}
-		});
+		}
+		).catch((error1:Error)=>{
+			rechazar(error1);
+		});		
 	});	
 }
 

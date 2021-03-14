@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
 var ruta = require("path");
 var archivos_1 = require("./archivos");
+var basedatos_1 = require("./basedatos");
+var constantes_1 = require("./constantes");
 var Coordenadas_1 = require("./Coordenadas");
 var TresEnRaya_1 = require("./TresEnRaya");
 var paginaPrincipal1;
@@ -33,6 +35,20 @@ application.on('activate', function () {
     if (paginaPrincipal1 === null)
         createWindow();
 });
+function actualizarVistaAlCargarPartida(evento) {
+    var lli_tablero = tresEnRaya.getLli_tablero();
+    var i = 0;
+    while (i < constantes_1.ALTO) {
+        var j = 0;
+        while (j < constantes_1.ANCHO) {
+            var i_jug = lli_tablero[i][j];
+            var co = { i_x: i, i_y: j };
+            evento.sender.send('marcaColorCasillaJugador', co, i_jug);
+            j++;
+        }
+        i++;
+    }
+}
 electron_1.ipcMain.on('eventoExportarAarchivo', function (evento3enRaya) {
     var s_estadoTablero = tresEnRaya.darTableroEnFormatoStringJSON();
     archivos_1.guardarEnArchivo(s_estadoTablero)
@@ -40,6 +56,48 @@ electron_1.ipcMain.on('eventoExportarAarchivo', function (evento3enRaya) {
         evento3enRaya.sender.send('actualizaPanelMensajes', 'se guardó con exito');
     })
         .catch(function () {
+        console.log('error01');
+        evento3enRaya.sender.send('actualizaPanelMensajes', 'error al guardar');
+    });
+});
+electron_1.ipcMain.on('eventoImportarBD', function (evento3enRaya) {
+    basedatos_1.dameUnaPartidaGuardadaBD()
+        .then(function (filas) {
+        if (filas != null && filas.length > 0) {
+            var s_estadoTablero = filas[0]['estado_tablero'];
+            tresEnRaya.cargarTableroDesdeStringJSON(s_estadoTablero);
+            evento3enRaya.sender.send('actualizaPanelMensajes', 'se cargo con exito');
+            actualizarVistaAlCargarPartida(evento3enRaya);
+        }
+        else {
+            evento3enRaya.sender.send('actualizaPanelMensajes', 'no hay partidas guardadas en BD');
+        }
+    })
+        .catch(function () {
+        console.log('error02');
+        evento3enRaya.sender.send('actualizaPanelMensajes', 'error al guardar');
+    });
+});
+electron_1.ipcMain.on('eventoExportarAbd', function (evento3enRaya) {
+    var s_estadoTablero = tresEnRaya.darTableroEnFormatoStringJSON();
+    basedatos_1.guardaPartidaEnBD(s_estadoTablero)
+        .then(function () {
+        evento3enRaya.sender.send('actualizaPanelMensajes', 'se guardó con exito');
+    })
+        .catch(function () {
+        console.log('error03');
+        evento3enRaya.sender.send('actualizaPanelMensajes', 'error al guardar');
+    });
+});
+electron_1.ipcMain.on('eventoImportarArchivo', function (evento3enRaya) {
+    archivos_1.leerArchivo()
+        .then(function (s_estadoTablero) {
+        tresEnRaya.cargarTableroDesdeStringJSON(s_estadoTablero);
+        evento3enRaya.sender.send('actualizaPanelMensajes', 'se cargo con exito');
+        actualizarVistaAlCargarPartida(evento3enRaya);
+    })
+        .catch(function () {
+        console.log('error04');
         evento3enRaya.sender.send('actualizaPanelMensajes', 'error al guardar');
     });
 });
