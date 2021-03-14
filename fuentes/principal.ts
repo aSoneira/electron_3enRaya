@@ -121,8 +121,12 @@ ipcMain.on('seleccionCasilla', function(evento3enRaya:Electron.IpcMainEvent, co:
 		evento3enRaya.sender.send('actualizaPanelMensajes','casilla ya seleccionada');
 	}
 	//evento3enRaya.sender.send('actualizaPanelMensajes','manda algo');
+});
 
-	
+ipcMain.on('eventoReiniciarPartida', function(evento:Electron.IpcMainEvent){
+	// tresEnRaya = new TresEnRaya();
+	tresEnRaya.inicializar();
+	evento.sender.send('desmarcaCasillas');
 });
 
 

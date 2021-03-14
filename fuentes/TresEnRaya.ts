@@ -2,7 +2,7 @@ import { Coordenadas } from "./Coordenadas";
 import { ALTO, ANCHO } from "./constantes";
 
 export class TresEnRaya{
-    private lli_tablero : number[][];
+    private lli_tablero : number[][]; //Matriz de 3x3 donde el valor corresponde con el jugador (1 o 2). 0=Casilla sin marcar.
     private lo_casillasLibres : Coordenadas[];
     private b_partidaTerminada : boolean;
 
